@@ -5,14 +5,16 @@ Peer-graded Assignment: Course Project 1 VK
 
 Following is script which loads the data itself.
 
-```{r}
+
+```r
 data_raw <- read.csv("activity.csv")
 ```
 
 Then, I make a copy of raw data into variable data, so that the raw data would not be lost.  
 Also, I format date column to contain values formatted as date and filter out the NA values.
 
-```{r}
+
+```r
 data <- data_raw
 data$date <- as.Date(as.character(data$date))
 data <- data[!is.na(data$steps),]
@@ -22,22 +24,38 @@ data <- data[!is.na(data$steps),]
 
 In order to calculate the number of steps per day I use function aggregate and store the result in variable steps_per_day.
 
-```{r}
+
+```r
 steps_per_day <- aggregate(steps~date, data,sum)
 ```
 
 Then, I load ggplot2 library and make the histogram which showstotal number of steps per date.
-```{r}
+
+```r
 library(ggplot2)
 p <-ggplot(data, aes(date, steps))
 p +geom_bar(stat = "identity")
 ```
 
+![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4-1.png)
+
 Then, I calculate the mean and median of steps per day.
 
-```{r}
+
+```r
 mean(steps_per_day$steps)
+```
+
+```
+## [1] 10766.19
+```
+
+```r
 median(steps_per_day$steps)
+```
+
+```
+## [1] 10765
 ```
 
 
@@ -45,20 +63,28 @@ median(steps_per_day$steps)
 
 First, I aggregate steps by interval using aggregate function and then make a plot.
 
-```{r}
+
+```r
 avg_steps_per_interval <- aggregate(steps~interval, data,mean)
 plot(avg_steps_per_interval$interval, avg_steps_per_interval$steps, type="l", 
      main = "Average number of steps per interval", ylab="steps", xlab="interval")
 ```
 
+![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6-1.png)
+
 Then, to find interval during which there appeared most steps, I use max
 function and extract the interval.
 That interval appears to be 830-835.
 
-```{r}
+
+```r
 max_nr_steps <- max(avg_steps_per_interval$steps)
 data_nr_steps <- avg_steps_per_interval[avg_steps_per_interval$steps==max_nr_steps,]
 data_nr_steps$interval
+```
+
+```
+## [1] 835
 ```
 
 
@@ -73,14 +99,21 @@ Following are scripts which do the following:
 * mean and median of steps;
 * plot the number of steps per day for the new data set;
 
-```{r, cache=TRUE}
+
+```r
 data_2 <- data_raw
 data_2$date <- as.Date(as.character(data_2$date))
 steps_NA <- is.na(data_2$steps)
 steps_date_NA <- is.na(data_2$steps)
 steps_interval_NA <- is.na(data_2$steps)
 sum(steps_NA | steps_date_NA | steps_interval_NA)
+```
 
+```
+## [1] 2304
+```
+
+```r
 for (i in rownames(data_2))
 {
     ## print(data_2[i,]$steps)
@@ -96,12 +129,28 @@ for (i in rownames(data_2))
 
 steps_per_day_2 <- aggregate(steps~date, data_2,sum)
 mean(steps_per_day_2$steps)
+```
+
+```
+## [1] 10766.19
+```
+
+```r
 median(steps_per_day_2$steps)
+```
+
+```
+## [1] 10766.19
+```
+
+```r
 avg_steps_per_interval_2 <- aggregate(steps~interval, data_2,sum)
 plot(avg_steps_per_interval_2$interval, avg_steps_per_interval_2$steps, type="l", 
      main = "Average number of steps per interval with \n missing values approximated",
      ylab="steps", xlab="interval")
 ```
+
+![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8-1.png)
 
 
 ### Are there differences in activity patterns between weekdays and weekends?
@@ -109,7 +158,8 @@ plot(avg_steps_per_interval_2$interval, avg_steps_per_interval_2$steps, type="l"
 First I make a vector containing names of weekdays and create new factor column
 identifing wh ether particular day is a weekday or a weekend.
 
-```{r}
+
+```r
 weekdays <- c("pirmadienis", "antradienis", "treèiadienis",
               "ketvirtadienis","penktadienis")
 data_2$week_day <- factor(weekdays(data_2$date) %in% weekdays, 
@@ -123,7 +173,8 @@ Then, I make a plot representing that data.
 It can be seen that on weekdays more steps are usually made.
 
 
-```{r}
+
+```r
 avg_steps_per_interval_weekday <- aggregate(steps~interval,
                                 data=subset(data_2,week_day=="weekday"),mean)
 
@@ -137,5 +188,7 @@ plot(avg_steps_per_interval_weekend$interval, avg_steps_per_interval_weekend$ste
      main = "Average steps during weekends",
      ylab="steps", xlab="interval", ylim=c(0,250))
 ```
+
+![plot of chunk unnamed-chunk-10](figure/unnamed-chunk-10-1.png)
 
 
